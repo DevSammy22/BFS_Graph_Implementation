@@ -1,7 +1,7 @@
 class Graph:
     def __init__(self, size):
         self.size = size
-        self.adj_matrix = [[0] * size for i in range(size)]
+        self.adj_matrix = [[0] * size for _ in range(size)]
         self.vertex_data = [""] * size
 
     def add_edge(self, u, v):
@@ -20,24 +20,28 @@ class Graph:
 
         print("\nVertex Data: ")
         for vertex, data in enumerate(self.vertex_data):
-            print(f"Vertex {vertex:} {data}")
+            print(f"Vertex {vertex}: {data}")
 
-    def bfs(self, start_vertex_data):
-        print("Breadth First Search from D: ")
-        start_vertex = self.vertex_data.index(start_vertex_data) # Find the index of start_vertex_data in self.vertex_data
-        queue = [start_vertex] # Initialize the queue with the index
-        visited = [False] * self.size
-        visited[queue[0]] = True
+    def is_bipartite(self):
+        colors = [-1] * self.size  # -1 means no color, 0 means one color, and 1 means another color
 
-        # Run while there are vertices in queue
-        while queue:
-            current_vertex = queue.pop(0)
-            print(self.vertex_data[current_vertex], end=" ")
-            for neighbour in range(self.size):
-                if self.adj_matrix[current_vertex][neighbour] == 1 and not visited[neighbour]:
-                    queue.append(neighbour)
-                    visited[neighbour] = True
+        for start in range(self.size):
+            if colors[start] == -1:  # if the vertex is not colored
+                queue = [start]
+                colors[start] = 0
 
+                while queue:
+                    current = queue.pop(0)
+
+                    for neighbor in range(self.size):
+                        if self.adj_matrix[current][neighbor] == 1 and colors[neighbor] == -1:
+                            colors[neighbor] = 1 - colors[current]
+                            queue.append(neighbor)
+                        elif colors[neighbor] == colors[current]:
+                            return False
+        return True
+
+# Example usage
 g = Graph(7)
 
 g.add_vertex_data(0, 'A')
@@ -60,4 +64,7 @@ g.add_edge(1, 5)  # B - F
 
 g.print_graph()
 
-g.bfs('D')
+if g.is_bipartite():
+    print("The graph is bipartite.")
+else:
+    print("The graph is not bipartite.")
