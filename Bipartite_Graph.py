@@ -23,7 +23,7 @@ class Graph:
     def isBipartite(self, start):
         colors = [-1] * self.size # -1 means no color, 0 means one color, and 1 means another color
         colors[start] = 0
-        queue = [start]
+        queue = [start] #initialize queue with starting vertex
 
         # Run while there are vertices in queue
         while queue:
