@@ -1,49 +1,47 @@
 class Graph:
     def __init__(self, size):
         self.size = size
-        self.adj_matrix = [[0] * size for _ in range(size)]
+        self.adj_matrix = [[0] * size for i in range(size)]
         self.vertex_data = [""] * size
 
     def add_edge(self, u, v):
         if 0 <= u < self.size and 0 <= v < self.size:
             self.adj_matrix[u][v] = 1
             self.adj_matrix[v][u] = 1
-
     def add_vertex_data(self, vertex, data):
         if 0 <= vertex < self.size:
             self.vertex_data[vertex] = data
-
     def print_graph(self):
-        print("Adjacent Matrix: ")
+        print("\nAdjacency matrix: ")
         for row in self.adj_matrix:
             print(" ".join(map(str, row)))
 
-        print("\nVertex Data: ")
+        print("\nVertex data: ")
         for vertex, data in enumerate(self.vertex_data):
-            print(f"Vertex {vertex}: {data}")
+            print(f"Vertex {vertex} : {data}")
 
-    def is_bipartite(self):
-        colors = [-1] * self.size  # -1 means no color, 0 means one color, and 1 means another color
+    def isBipartite(self, start):
+        colors = [-1] * self.size # -1 means no color, 0 means one color, and 1 means another color
+        colors[start] = 0
+        queue = [start]
 
-        for start in range(self.size):
-            if colors[start] == -1:  # if the vertex is not colored
-                queue = [start]
-                colors[start] = 0
+        # Run while there are vertices in queue
+        while queue:
+            current_vertex = queue.pop(0)
+            # Return false if there is a self-loop
+            if self.adj_matrix[current_vertex][current_vertex] == 1:
+                return False
 
-                while queue:
-                    current = queue.pop(0)
-
-                    for neighbor in range(self.size):
-                        if self.adj_matrix[current][neighbor] == 1 and colors[neighbor] == -1:
-                            colors[neighbor] = 1 - colors[current]
-                            queue.append(neighbor)
-                        elif colors[neighbor] == colors[current]:
-                            return False
+            for neighbour in range(self.size):
+                if self.adj_matrix[current_vertex][neighbour] == 1 and colors[neighbour] == -1:
+                    colors[neighbour] = 1 - colors[current_vertex] # Assign alternate color to this adjacent neigbhour of current_vertex
+                    queue.append(neighbour)
+                elif self.adj_matrix[current_vertex][neighbour] == 1 and colors[neighbour] == colors[current_vertex]:
+                    return False
         return True
 
-# Example usage
-g = Graph(7)
 
+g = Graph(7)
 g.add_vertex_data(0, 'A')
 g.add_vertex_data(1, 'B')
 g.add_vertex_data(2, 'C')
@@ -64,7 +62,8 @@ g.add_edge(1, 5)  # B - F
 
 g.print_graph()
 
-if g.is_bipartite():
-    print("The graph is bipartite.")
+
+if g.isBipartite(0):
+    print("The graph is bipartite")
 else:
-    print("The graph is not bipartite.")
+    print("The graph is not bipartite")
